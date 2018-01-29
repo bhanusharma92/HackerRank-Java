@@ -1,35 +1,94 @@
-import java.util.Scanner;
+import java.util.*;
 class EvenTree{
-	public static int countChild(int graph[][], int root){
-		
-	}
-	public static void createForest(int graph[][], int root){
-		
-	}
+
+	@SuppressWarnings("unchecked")
+	static int bfs(Map hm, int root, int otherNode){
+		int count = 0;
+		try {
+			LinkedList<Integer> queue = new LinkedList<Integer>();
+			ArrayList<Integer> al = new ArrayList<Integer>();
+			count = 0;
+			queue.offer(root);
+
+			while (!queue.isEmpty()) {
+                Integer head = queue.poll();
+                al.add(head);
+                count++;
+                LinkedHashSet<Integer> set = (LinkedHashSet<Integer>) hm.get(head);
+                if(set!=null){
+                    for (Integer i : set) {
+                        if (!al.contains(i) && (i != otherNode)) {
+                            queue.offer(i);
+                        }
+                    }
+                }
+            }
+		} catch (java.lang.Exception exception) {
+			exception.printStackTrace();
+		}
+
+		return count;
+    }
+
 	public static void main(String args[]){
 		Scanner sc = new Scanner(System.in);
 		int n = sc.nextInt();
 		int m = sc.nextInt();
-		int graph[][] = new int[n][n];
 
-		for(int i = 0; i < n; i++){
-			for(int j = 0; j < n; j++){
-				graph[i][j] =  0;
-			}
-		}
-
+		Map<Integer, LinkedHashSet<Integer>> hm = new HashMap<Integer, LinkedHashSet<Integer>>();
 		for(int i = 0; i < m; i++){
-			int u = sc.nextInt() - 1;
-			int v = sc.nextInt() - 1;
-			graph[u][v] = 1;
-			graph[v][u] = 1;
+			int u = sc.nextInt();
+			int v = sc.nextInt();
+
+			if(hm.containsKey(u)){
+                LinkedHashSet<Integer> list = hm.get(u);
+			    list.add(v);
+            }else{
+                LinkedHashSet<Integer> list = new LinkedHashSet<Integer>();
+			    list.add(v);
+			    hm.put(u, list);
+            }
+
+
+            if(hm.containsKey(v)){
+                LinkedHashSet<Integer> list = hm.get(v);
+                list.add(u);
+            }else{
+                LinkedHashSet<Integer> list = new LinkedHashSet<Integer>();
+                list.add(u);
+                hm.put(v, list);
+            }
 		}
 
-		for(int i = 0; i < n; i++){
-			for(int j = 0; j < n; j++){
-				System.out.print(graph[i][j] + " ");
-			}
-			System.out.println();
-		}
+		// int root = sc.nextInt();
+		// int otherNode = sc.nextInt();
+		// int noOfNodes = bfs(hm, root, otherNode);
+        // System.out.println("noOfNodes: " + noOfNodes);
+        int count = 0;
+        for(Integer i: hm.keySet()){
+            System.out.println("Key: "+ i + "\n");
+            HashSet<Integer> hs = hm.get(i);
+            for(Integer j : hs){
+                System.out.print("\t"+j + " ");
+            }
+
+        }
+        System.out.println();
+        for(Integer i: hm.keySet()){
+            // System.out.println("Key: "+ i);
+            HashSet<Integer> hs = hm.get(i);
+            for(Integer j : hs){
+                // System.out.print("\t"+j + " ");
+                if(bfs(hm, i, j) % 2 == 0){
+                    count++;
+                }
+                hm.get(j).remove(i);
+            }
+
+        }
+        System.out.println(count);
+
+
+
 	}
 }
